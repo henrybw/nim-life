@@ -1,1 +1,3 @@
 Game of Life written in Nim
+
+Note: The build/link scripts are specifically to support cross-compiling between OS X and Linux, i.e. compiling Nim -> C on Linux, and C -> native on OS X. For self-hosting dev environments, just run `nim compile` like a normal person. :P
