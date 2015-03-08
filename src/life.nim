@@ -1,4 +1,4 @@
-import core.life
+import core
 
 when isMainModule:
     echo("test, please ignore")
