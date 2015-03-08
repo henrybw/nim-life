@@ -1,3 +1,4 @@
 .sw*
 .*.sw*
 nimcache/
+compile_*.sh

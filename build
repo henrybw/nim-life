@@ -5,6 +5,6 @@ if [ $# -lt 1 ]; then
     exit 1
 fi
 
-nim c --compileOnly --genScript $@ &&
+nim c --compileOnly --cc:clang --genScript $@ &&
 cat nimcache/system.c | sed -e 's,MAP_ANONYMOUS,MAP_ANON,g' > nimcache/system.new.c &&
 mv nimcache/system.new.c nimcache/system.c
