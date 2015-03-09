@@ -22,6 +22,7 @@ suite "core life tests":
         let simple = @[@[true,  false],
                        @[false, true],
                        @[true,  true]]
+
         let grid =        @[@[true , false, false, false, true , false],
                             @[false, false, true , false, true , false],
                             @[true , false, false, false, true , true ],
@@ -114,10 +115,10 @@ suite "core life tests":
         univ.evolveCellAt(1, 1)
         check(univ.cellAt(1, 1).alive == false, "cell with passive neighbors starts dead")
 
-    # XXX - This is currently broken
     test "evolve":
         var univ = newUniverse(grid)
-        echo(univ)
         univ.evolve()
-        echo(univ)
-        check(univ.cells == newUniverse(gridEvolved).cells)
+        
+        var evolvedCells = univ.cells.mapIt(bool, it.alive)
+        var referenceCells = newUniverse(gridEvolved).cells.mapIt(bool, it.alive)
+        check(evolvedCells == referenceCells)

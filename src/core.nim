@@ -16,7 +16,7 @@ const
 
 type
     Cell* = ref CellObj
-    CellObj* = object
+    CellObj = object
         alive*: bool
         age*: int
 
@@ -111,7 +111,8 @@ proc evolveCellAt(univ: var Universe, x, y: int) =
     univ.cells[slot] = cell
 
 ## Evolves a generation according to the Game of Life rules
-## XXX - This is currently broken
+## XXX - This is currently broken because we don't snapshot the neighbors before
+## evolving the cells
 proc evolve*(univ: var Universe) =
     for x in 0..univ.width - 1:
         for y in 0..univ.height - 1:
