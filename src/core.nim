@@ -66,15 +66,13 @@ proc height*(univ: Universe): int {.inline.} =
 ## Returns the cell at (x,y) in the given universe. If the requested cell is
 ## outside the bounds of the universe, this just assumes that the cell is dead.
 proc cellAt*(univ: Universe, x, y: int): Cell {.inline.} =
-    let slot = univ.cellSlot(x, y)
-    if slot >= 0 and slot < univ.cells.len:
-        return univ.cells[slot]
+    if x >= 0 and x < univ.width and y >= 0 and y < univ.height:
+        return univ.cells[univ.cellSlot(x, y)]
     else:
         return newCell()
 
 ## Returns a sequence of cells representing the neighbors of the cell at (x,y)
 ## in the given universe.
-## XXX - This is currently broken
 proc neighborsAt(univ: Universe, x, y: int): seq[Cell] =
     @[univ.cellAt(x - 1, y - 1),
       univ.cellAt(  x  , y - 1),

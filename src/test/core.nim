@@ -61,6 +61,15 @@ suite "core life tests":
             simpleUniv.cellAt(0, 2).alive == true
             simpleUniv.cellAt(1, 2).alive == true
 
+    test "cellAt out-of-bounds":
+        var simpleUniv = newUniverse(simple)
+        check:
+            simpleUniv.cellAt(-1, -1).alive == false
+            simpleUniv.cellAt(simpleUniv.width, 0).alive == false
+            simpleUniv.cellAt(0, simpleUniv.height).alive == false
+            simpleUniv.cellAt(simpleUniv.width, simpleUniv.height).alive == false
+
+
     test "countAlive":
         var cells = newSeqWith(20, newCell(false))
         check(cells.countAlive() == 0)
@@ -73,7 +82,6 @@ suite "core life tests":
         check(revivingNeighbors.toCells().countAlive() == 3)
         check(passiveNeighbors.toCells().countAlive() == 2)
 
-    # TODO: This test case needs to be better
     test "neighborsAt":
         let killing = universeWithNeighborsAt(true, 1, 1, killingNeighbors)
         let reviving = universeWithNeighborsAt(true, 1, 1, revivingNeighbors)
@@ -83,46 +91,37 @@ suite "core life tests":
         check(len(reviving.neighborsAt(1, 1)) == len(revivingNeighbors.toCells()))
         check(len(passive.neighborsAt(1, 1)) == len(passiveNeighbors.toCells()))
 
+        check(killing.neighborsAt(0, 0).countAlive() == 2, "out-of-bounds neighbors check")
+
     test "evolveCellAt":
         var univ: Universe
 
         univ = universeWithNeighborsAt(true, 1, 1, killingNeighbors)
         check(univ.cellAt(1, 1).alive == true, "cell to be killed starts alive")
-        univ.evolveCellAt(1, 1)
+        univ.evolve()
         check(univ.cellAt(1, 1).alive == false, "cell to be killed gets killed")
-
-        univ = universeWithNeighborsAt(false, 1, 1, killingNeighbors)
-        check(univ.cellAt(1, 1).alive == false, "cell to be killed starts dead")
-        univ.evolveCellAt(1, 1)
-        check(univ.cellAt(1, 1).alive == false, "cell to be killed is still dead")
 
         univ = universeWithNeighborsAt(false, 1, 1, revivingNeighbors)
         check(univ.cellAt(1, 1).alive == false, "cell to be revived starts dead")
-        univ.evolveCellAt(1, 1)
+        univ.evolve()
         check(univ.cellAt(1, 1).alive == true, "cell to be revived gets revived")
-
-        univ = universeWithNeighborsAt(true, 1, 1, revivingNeighbors)
-        check(univ.cellAt(1, 1).alive == true, "cell to be revived starts alive")
-        univ.evolveCellAt(1, 1)
-        check(univ.cellAt(1, 1).alive == true, "cell to be revived is still alive")
 
         univ = universeWithNeighborsAt(true, 1, 1, passiveNeighbors)
         check(univ.cellAt(1, 1).alive == true, "cell with passive neighbors starts alive")
-        univ.evolveCellAt(1, 1)
+        univ.evolve()
         check(univ.cellAt(1, 1).alive == true, "cell with passive neighbors stays alive")
 
         univ = universeWithNeighborsAt(false, 1, 1, passiveNeighbors)
         check(univ.cellAt(1, 1).alive == false, "cell with passive neighbors starts dead")
-        univ.evolveCellAt(1, 1)
+        univ.evolve()
         check(univ.cellAt(1, 1).alive == false, "cell with passive neighbors starts dead")
 
     test "evolve":
         var univ = newUniverse(grid)
-        echo(univ)
-        echo(univ.neighborsAt(0, 2))
         univ.evolve()
-        echo(univ)
 
         var evolvedCells = univ.cells.mapIt(bool, it.alive)
         var referenceCells = newUniverse(gridEvolved).cells.mapIt(bool, it.alive)
         check(evolvedCells == referenceCells)
+
+    # TODO: add glider gun as a test case
