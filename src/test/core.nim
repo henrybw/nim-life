@@ -128,4 +128,4 @@ suite "core life tests":
         var referenceCells = newUniverse(gridEvolved).cells.mapIt(bool, it.alive)
         check(evolvedCells == referenceCells)
 
-    # TODO: add glider gun as a test case
+        # TODO: add glider gun as a test case
