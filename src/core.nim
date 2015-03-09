@@ -11,10 +11,8 @@ from strutils import repeatChar, `%`
 
 const
     kDeadCell = -1
-
-    # 7 steps, i.e. 0..6
-    # TODO: make this configurable?
-    kMaxCellAge = 6
+    kMaxCellAge = 6  # 7 steps, i.e. 0..6
+                     # TODO: make this configurable?
 
 type
     Cell* = ref CellObj
@@ -22,11 +20,11 @@ type
         alive*: bool
         age*: int
 
-proc `$`(cell: Cell): string =
-    if cell.alive:
-        return " $1 " % $cell.age
-    else:
-        return "   "
+    Universe* = object
+        cells: seq[Cell]
+        width: int
+        height: int
+        age: int
 
 proc newCell(alive: bool): Cell =
     Cell(alive: alive, age: if alive: 0 else: kDeadCell)
@@ -36,15 +34,6 @@ proc newCell(): Cell =
 
 proc countAlive(cells: seq[Cell]): int =
     cells.filter(proc (c: Cell): bool = c.alive).len
-
-#-------------------------------------------------------------------------------
-
-type
-    Universe* = object
-        cells: seq[Cell]
-        width: int
-        height: int
-        age: int
 
 ## Determines which physical slot in the universe this cell should be in.
 proc cellSlot(univ: Universe, x, y: int): int =
@@ -63,6 +52,9 @@ proc newUniverse*(cells: seq[seq[bool]]): Universe =
         for y in cells.low .. cells.high:
             univ.cells[univ.cellSlot(x, y)] = newCell(cells[y][x])
     return univ
+
+## Universe width/height should be immutable after creation, so only expose
+## read-only properties for them.
 
 proc width*(univ: Universe): int {.inline.} =
     univ.width
@@ -125,6 +117,12 @@ proc evolve*(univ: var Universe) =
         for y in 0..univ.height - 1:
             univ.evolveCellAt(x, y)
     inc(univ.age)
+
+proc `$`(cell: Cell): string =
+    if cell.alive:
+        return " $1 " % $cell.age
+    else:
+        return "   "
 
 proc `$`*(univ: Universe): string =
     var str = "\n+" & repeatChar(3 * univ.width, '-') & "+\n"
