@@ -17,6 +17,13 @@ suite "core life tests":
             cells[x].insert(cellState, y)  # Bool matrices are inverted
             return newUniverse(cells)
 
+        # Special helper proc that discards cell age and only checks if the
+        # live/dead cells in both universes match.
+        proc cellsMatch(univ1: Universe, univ2: Universe): bool =
+            let cells1 = univ1.cells.mapIt(bool, it.alive)
+            let cells2 = univ2.cells.mapIt(bool, it.alive)
+            return cells1 == cells2
+
         # Ugly because we're nesting sequences of sequences, but it's more
         # flexible for testing...
         let simple = @[@[true,  false],
@@ -122,10 +129,8 @@ suite "core life tests":
 
     test "evolve":
         var univ = newUniverse(grid)
+        let referenceUniv = newUniverse(gridEvolved)
         univ.evolve()
-
-        let evolvedCells = univ.cells.mapIt(bool, it.alive)
-        let referenceCells = newUniverse(gridEvolved).cells.mapIt(bool, it.alive)
-        check(evolvedCells == referenceCells)
+        check(univ.cellsMatch(referenceUniv))
 
         # TODO: add glider gun as a test case
