@@ -37,7 +37,6 @@ proc newCell(): Cell =
 proc countAlive(cells: seq[Cell]): int =
     cells.filter(proc (c: Cell): bool = c.alive).len
 
-
 #-------------------------------------------------------------------------------
 
 type
@@ -64,7 +63,6 @@ proc newUniverse*(cells: seq[seq[bool]]): Universe =
         for y in cells.low .. cells.high:
             univ.cells[univ.cellSlot(x, y)] = newCell(cells[y][x])
     return univ
-
 
 proc width*(univ: Universe): int {.inline.} =
     univ.width
