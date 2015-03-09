@@ -143,7 +143,7 @@ proc evolve*(univ: var Universe) =
 
     inc(univ.age)
 
-proc `$`(cell: Cell): string =
+proc `$`*(cell: Cell): string =
     return if cell.alive: $cell.age else: " "
 
 proc `$`*(univ: Universe): string =
