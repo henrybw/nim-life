@@ -61,14 +61,18 @@ suite "core life tests":
             simpleUniv.cellAt(0, 2).alive == true
             simpleUniv.cellAt(1, 2).alive == true
 
-    test "cellAt out-of-bounds":
+        # Universes must be constructed from actual bool matrices. Jagged 2D
+        # sequences should fail.
+        expect(IndexError):
+            var jaggedUniv = newUniverse(killingNeighbors)
+
+    test "out-of-bounds cellAt":
         var simpleUniv = newUniverse(simple)
         check:
             simpleUniv.cellAt(-1, -1).alive == false
             simpleUniv.cellAt(simpleUniv.width, 0).alive == false
             simpleUniv.cellAt(0, simpleUniv.height).alive == false
             simpleUniv.cellAt(simpleUniv.width, simpleUniv.height).alive == false
-
 
     test "countAlive":
         var cells = newSeqWith(20, newCell(false))
