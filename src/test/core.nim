@@ -127,10 +127,33 @@ suite "core life tests":
         univ.evolve()
         check(univ.cellAt(1, 1).alive == false, "cell with passive neighbors starts dead")
 
-    test "evolve":
+    test "evolve and cell age":
         var univ = newUniverse(grid)
         let referenceUniv = newUniverse(gridEvolved)
         univ.evolve()
-        check(univ.cellsMatch(referenceUniv))
 
-        # TODO: add glider gun as a test case
+        check(univ.cellsMatch(referenceUniv))
+        check(univ.cellAt(0, 0).age == 0)
+        check(univ.cellAt(3, 0).age == 1)
+        check(univ.cellAt(1, 1).age == 1)
+        check(univ.cellAt(4, 1).age == 1)
+        check(univ.cellAt(2, 2).age == 1)
+        check(univ.cellAt(4, 2).age == 1)
+        check(univ.cellAt(5, 2).age == 1)
+        check(univ.cellAt(1, 3).age == 1)
+
+        univ.evolve()
+        check(univ.cellAt(0, 0).age == 0)
+        check(univ.cellAt(3, 0).age == 0)
+        check(univ.cellAt(1, 1).age == 0)
+        check(univ.cellAt(2, 1).age == 1)
+        check(univ.cellAt(4, 1).age == 2)
+        check(univ.cellAt(5, 1).age == 1)
+        check(univ.cellAt(1, 2).age == 1)
+        check(univ.cellAt(2, 2).age == 2)
+        check(univ.cellAt(3, 2).age == 1)
+        check(univ.cellAt(4, 2).age == 2)
+        check(univ.cellAt(5, 2).age == 2)
+        check(univ.cellAt(1, 3).age == 0)
+
+        # TODO: add glider as a test case

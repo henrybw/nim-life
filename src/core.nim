@@ -9,11 +9,6 @@
 from sequtils import filter, newSeqWith
 from strutils import repeatChar, `%`
 
-const
-    kDeadCell = -1
-    kMaxCellAge = 6  # 7 steps, i.e. 0..6
-                     # TODO: make this configurable?
-
 type
     Cell* = ref CellObj
     CellObj = object
@@ -27,9 +22,9 @@ type
         height: int
         age: int
 
-## Constructs a new cell. If the cell is alive, it will start at age 0.
+## Constructs a new cell.
 proc newCell(alive: bool): Cell =
-    Cell(alive: alive, age: if alive: 0 else: kDeadCell, liveNeighbors: 0)
+    Cell(alive: alive, age: 0, liveNeighbors: 0)
 
 ## Constructs a new (dead) cell.
 proc newCell(): Cell =
@@ -117,7 +112,7 @@ proc evolveCellAt(univ: var Universe, x, y: int) =
     else:
         cell.alive = cell.liveNeighbors == 3
 
-    cell.age = if cell.alive: min(cell.age + 1, kMaxCellAge) else: kDeadCell
+    cell.age = if cell.alive: cell.age + 1 else: 0
     univ.cells[univ.cellSlot(x, y)] = cell
 
 ## Evolves a generation according to the Game of Life rules
