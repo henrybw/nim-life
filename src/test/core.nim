@@ -9,9 +9,9 @@ suite "core life tests":
             var cellSeq = foldl(cells, concat(a, b))
             cellSeq.mapIt(Cell, newCell(alive = it))
 
-        proc universeWithneighborsAt(cellState: bool,
-                                   x, y: int,
-                                   neighbors: seq[seq[bool]]): Universe =
+        proc universeWithNeighborsAt(cellState: bool,
+                                     x, y: int,
+                                     neighbors: seq[seq[bool]]): Universe =
             var cells: seq[seq[bool]]
             deepCopy(cells, neighbors)
             cells[x].insert(cellState, y)  # Bool matrices are inverted
