@@ -73,6 +73,7 @@ suite "core life tests":
         check(revivingNeighbors.toCells().countAlive() == 3)
         check(passiveNeighbors.toCells().countAlive() == 2)
 
+    # TODO: This test case needs to be better
     test "neighborsAt":
         let killing = universeWithNeighborsAt(true, 1, 1, killingNeighbors)
         let reviving = universeWithNeighborsAt(true, 1, 1, revivingNeighbors)
@@ -117,8 +118,11 @@ suite "core life tests":
 
     test "evolve":
         var univ = newUniverse(grid)
+        echo(univ)
+        echo(univ.neighborsAt(0, 2))
         univ.evolve()
-        
+        echo(univ)
+
         var evolvedCells = univ.cells.mapIt(bool, it.alive)
         var referenceCells = newUniverse(gridEvolved).cells.mapIt(bool, it.alive)
         check(evolvedCells == referenceCells)

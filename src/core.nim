@@ -19,6 +19,7 @@ type
     CellObj = object
         alive*: bool
         age*: int
+        liveNeighbors: int
 
     Universe* = object
         cells: seq[Cell]
@@ -27,7 +28,7 @@ type
         age: int
 
 proc newCell(alive: bool): Cell =
-    Cell(alive: alive, age: if alive: 0 else: kDeadCell)
+    Cell(alive: alive, age: if alive: 0 else: kDeadCell, liveNeighbors: 0)
 
 proc newCell(): Cell =
     newCell(false)
@@ -73,6 +74,7 @@ proc cellAt*(univ: Universe, x, y: int): Cell {.inline.} =
 
 ## Returns a sequence of cells representing the neighbors of the cell at (x,y)
 ## in the given universe.
+## XXX - This is currently broken
 proc neighborsAt(univ: Universe, x, y: int): seq[Cell] =
     @[univ.cellAt(x - 1, y - 1),
       univ.cellAt(  x  , y - 1),
@@ -98,39 +100,39 @@ proc neighborsAt(univ: Universe, x, y: int): seq[Cell] =
 ## 4. Any dead cell with exactly three live neighbors becomes a live cell, as
 ##    if by reproduction.
 proc evolveCellAt(univ: var Universe, x, y: int) =
-    let liveNeighbors = countAlive(univ.neighborsAt(x, y))
     let slot = univ.cellSlot(x, y)
     var cell = univ.cellAt(x, y)
 
     if cell.alive:
-        cell.alive = liveNeighbors >= 2 and liveNeighbors <= 3
+        cell.alive = cell.liveNeighbors >= 2 and cell.liveNeighbors <= 3
     else:
-        cell.alive = liveNeighbors == 3
+        cell.alive = cell.liveNeighbors == 3
     cell.age = if cell.alive: min(cell.age + 1, kMaxCellAge) else: kDeadCell
 
     univ.cells[slot] = cell
 
 ## Evolves a generation according to the Game of Life rules
-## XXX - This is currently broken because we don't snapshot the neighbors before
-## evolving the cells
 proc evolve*(univ: var Universe) =
     for x in 0..univ.width - 1:
         for y in 0..univ.height - 1:
+            univ.cellAt(x, y).liveNeighbors = univ.neighborsAt(x, y).countAlive()
+
+    for x in 0..univ.width - 1:
+        for y in 0..univ.height - 1:
             univ.evolveCellAt(x, y)
+
     inc(univ.age)
 
 proc `$`(cell: Cell): string =
-    if cell.alive:
-        return " $1 " % $cell.age
-    else:
-        return "   "
+    return if cell.alive: $cell.age else: " "
 
 proc `$`*(univ: Universe): string =
-    var str = "\n+" & repeatChar(3 * univ.width, '-') & "+\n"
+    var divider = "+" & repeatChar(2 * univ.width - 1, '-') & "+"
+    var str = "\n" & divider & "\n"
     for y in 0..univ.height - 1:
-        str &= "+"
+        str &= "|"
         for x in 0..univ.width - 1:
-            str &= $univ.cellAt(x, y)
-        str &= "+\n"
-    str &= "+" & repeatChar(3 * univ.width, '-') & "+"
+            str &= $univ.cellAt(x, y) & "|"
+        str &= "\n"
+        str &= divider & "\n"
     return str
