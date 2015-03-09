@@ -135,4 +135,3 @@ proc `$`*(univ: Universe): string =
         str &= "+\n"
     str &= "+" & repeatChar(3 * univ.width, '-') & "+"
     return str
-
