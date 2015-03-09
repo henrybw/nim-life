@@ -12,9 +12,9 @@ from strutils import repeatChar, `%`
 type
     Cell* = ref CellObj
     CellObj = object
-        alive*: bool
-        age*: int
-        liveNeighbors: int
+        alive: bool
+        age: int
+        liveNeighbors: int  # Cache of live neighbors used during evolution
 
     Universe* = object
         cells: seq[Cell]
@@ -23,15 +23,24 @@ type
         age: int
 
 ## Constructs a new cell.
-proc newCell(alive: bool): Cell =
+proc newCell*(alive: bool): Cell =
     Cell(alive: alive, age: 0, liveNeighbors: 0)
 
 ## Constructs a new (dead) cell.
-proc newCell(): Cell =
+proc newCell*(): Cell =
     newCell(false)
 
+## Cell properties should be immutable after creation, so only expose
+## read-only getters for them.
+
+proc alive*(cell: Cell): bool =
+    cell.alive
+
+proc age*(cell: Cell): int =
+    cell.age
+
 ## Counts the number of living cells in the given sequence of cells.
-proc countAlive(cells: seq[Cell]): int =
+proc countAlive*(cells: seq[Cell]): int =
     cells.filter(proc (c: Cell): bool = c.alive).len
 
 ## Determines which physical slot in the universe this cell should be in.
@@ -58,14 +67,17 @@ proc newUniverse*(cells: seq[seq[bool]]): Universe =
             univ.cells[univ.cellSlot(x, y)] = newCell(cells[y][x])
     return univ
 
-## Universe width/height should be immutable after creation, so only expose
-## read-only properties for them.
+## Universe properties should be immutable after creation, so only expose
+## read-only getters for them.
 
 proc width*(univ: Universe): int {.inline.} =
     univ.width
 
 proc height*(univ: Universe): int {.inline.} =
     univ.height
+
+proc age*(univ: Universe): int {.inline.} =
+    univ.age
 
 ## Returns the cell at (x,y) in the given universe. If the requested cell is
 ## outside the bounds of the universe, this just assumes that the cell is dead.
@@ -77,7 +89,7 @@ proc cellAt*(univ: Universe, x, y: int): Cell {.inline.} =
 
 ## Returns a sequence of cells representing the neighbors of the cell at (x,y)
 ## in the given universe.
-proc neighborsAt(univ: Universe, x, y: int): seq[Cell] =
+proc neighborsAt*(univ: Universe, x, y: int): seq[Cell] =
     @[univ.cellAt(x - 1, y - 1),
       univ.cellAt(  x  , y - 1),
       univ.cellAt(x + 1, y - 1),
