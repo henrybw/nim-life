@@ -124,8 +124,8 @@ suite "core life tests":
         var univ = newUniverse(grid)
         univ.evolve()
 
-        var evolvedCells = univ.cells.mapIt(bool, it.alive)
-        var referenceCells = newUniverse(gridEvolved).cells.mapIt(bool, it.alive)
+        let evolvedCells = univ.cells.mapIt(bool, it.alive)
+        let referenceCells = newUniverse(gridEvolved).cells.mapIt(bool, it.alive)
         check(evolvedCells == referenceCells)
 
         # TODO: add glider gun as a test case
