@@ -5,7 +5,7 @@ include "../core"
 
 suite "core life tests":
     setup:
-        proc toCells(cells: seq[seq[bool]]): seq[Cell] =
+        proc toCellSeq(cells: seq[seq[bool]]): seq[Cell] =
             var cellSeq = foldl(cells, concat(a, b))
             cellSeq.mapIt(Cell, newCell(alive = it))
 
@@ -82,18 +82,18 @@ suite "core life tests":
         cells[5].alive = true
         check(cells.countAlive() == 2)
 
-        check(killingNeighbors.toCells().countAlive() == 5)
-        check(revivingNeighbors.toCells().countAlive() == 3)
-        check(passiveNeighbors.toCells().countAlive() == 2)
+        check(killingNeighbors.toCellSeq().countAlive() == 5)
+        check(revivingNeighbors.toCellSeq().countAlive() == 3)
+        check(passiveNeighbors.toCellSeq().countAlive() == 2)
 
     test "neighborsAt":
         let killing = universeWithNeighborsAt(true, 1, 1, killingNeighbors)
         let reviving = universeWithNeighborsAt(true, 1, 1, revivingNeighbors)
         let passive = universeWithNeighborsAt(true, 1, 1, passiveNeighbors)
 
-        check(len(killing.neighborsAt(1, 1)) == len(killingNeighbors.toCells()))
-        check(len(reviving.neighborsAt(1, 1)) == len(revivingNeighbors.toCells()))
-        check(len(passive.neighborsAt(1, 1)) == len(passiveNeighbors.toCells()))
+        check(len(killing.neighborsAt(1, 1)) == len(killingNeighbors.toCellSeq()))
+        check(len(reviving.neighborsAt(1, 1)) == len(revivingNeighbors.toCellSeq()))
+        check(len(passive.neighborsAt(1, 1)) == len(passiveNeighbors.toCellSeq()))
 
         check(killing.neighborsAt(0, 0).countAlive() == 2, "out-of-bounds neighbors check")
 
