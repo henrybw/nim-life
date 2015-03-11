@@ -1,5 +1,5 @@
 import unittest
-from sequtils import concat, foldl, filter, mapIt, newSeqWith
+from sequtils import concat, filter, foldl, mapIt, newSeqWith
 
 include "../src/lifecore"
 
@@ -9,6 +9,8 @@ suite "core life tests":
             var cellSeq = foldl(cells, concat(a, b))
             cellSeq.mapIt(Cell, newCell(alive = it))
 
+        # Helper to create a new universe surrounded by the given set of
+        # neighbors.
         proc universeWithNeighborsAt(cellState: bool,
                                      x, y: int,
                                      neighbors: seq[seq[bool]]): Universe =
@@ -24,8 +26,8 @@ suite "core life tests":
             let cells2 = univ2.cells.mapIt(bool, it.alive)
             return cells1 == cells2
 
-        # Ugly because we're nesting sequences of sequences, but it's more
-        # flexible for testing...
+        # Ugly because we're nesting sequences (which require '@' prefixing),
+        # but it's more flexible for testing...
         let simple = @[@[true,  false],
                        @[false, true],
                        @[true,  true]]

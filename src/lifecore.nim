@@ -7,7 +7,7 @@
 ## outside of the grid is dead.
 
 from sequtils import filter, newSeqWith
-from strutils import repeatChar, `%`
+from strutils import repeatChar
 
 type
     Cell* = ref CellObj
@@ -39,6 +39,18 @@ proc alive*(cell: Cell): bool =
 proc age*(cell: Cell): int =
     cell.age
 
+## Universe properties should be immutable after creation, so only expose
+## read-only getters for them.
+
+proc width*(univ: Universe): int {.inline.} =
+    univ.width
+
+proc height*(univ: Universe): int {.inline.} =
+    univ.height
+
+proc age*(univ: Universe): int {.inline.} =
+    univ.age
+
 ## Counts the number of living cells in the given sequence of cells.
 proc countAlive*(cells: seq[Cell]): int =
     cells.filter(proc (c: Cell): bool = c.alive).len
@@ -62,22 +74,10 @@ proc newUniverse*(width: int, height: int): Universe =
 proc newUniverse*(cells: seq[seq[bool]]): Universe =
     # Swap the "x" and "y" coordinates from the bool matrix, since it's inverted
     var univ = newUniverse(cells[0].len, cells.len)
-    for x in cells[0].low .. cells[0].high:
-        for y in cells.low .. cells.high:
+    for x in cells[0].low..cells[0].high:
+        for y in cells.low..cells.high:
             univ.cells[univ.cellSlot(x, y)] = newCell(cells[y][x])
     return univ
-
-## Universe properties should be immutable after creation, so only expose
-## read-only getters for them.
-
-proc width*(univ: Universe): int {.inline.} =
-    univ.width
-
-proc height*(univ: Universe): int {.inline.} =
-    univ.height
-
-proc age*(univ: Universe): int {.inline.} =
-    univ.age
 
 ## Returns the cell at (x,y) in the given universe. If the requested cell is
 ## outside the bounds of the universe, this just assumes that the cell is dead.
