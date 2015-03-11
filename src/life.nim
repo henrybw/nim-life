@@ -1,4 +1,4 @@
-import core
+import lifecore
 
 when isMainModule:
     # TODO: implment driver system

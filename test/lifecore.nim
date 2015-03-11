@@ -1,7 +1,7 @@
 import unittest
 from sequtils import concat, foldl, filter, mapIt, newSeqWith
 
-include "../core"
+include "../src/lifecore"
 
 suite "core life tests":
     setup:
