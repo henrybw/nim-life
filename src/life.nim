@@ -1,5 +1,5 @@
 import lifecore
+import drivers/life2d
 
 when isMainModule:
-    # TODO: implment driver system
-    echo()
+    life2d.main()
