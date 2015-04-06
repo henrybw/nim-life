@@ -87,6 +87,11 @@ proc cellAt*(univ: Universe, x, y: int): Cell {.inline.} =
     else:
         return newCell()
 
+## Assign the cell at (x,y) in the given universe to the given cell value.
+proc setCellAt*(univ: var Universe, x, y: int, cell: Cell) =
+    if x >= 0 and x < univ.width and y >= 0 and y < univ.height:
+        univ.cells[univ.cellSlot(x, y)] = cell
+
 ## Returns a sequence of cells representing the neighbors of the cell at (x,y)
 ## in the given universe.
 proc neighborsAt*(univ: Universe, x, y: int): seq[Cell] =

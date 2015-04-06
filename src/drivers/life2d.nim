@@ -1,22 +1,46 @@
+import random
 import sdl2, sdl2/gfx
 import "../lifecore"
 
-proc resize(univ: var Universe, width: int, height: int) =
-    # TODO: implement!
-    return
+const
+    kPixelSize = 8
+    kCellGradient = 6  # Steps from brightest to darkest
+    kBaseCellColor = 50
+
+proc init(univ: var Universe) =
+    # Cell population is generated with every cell having a 1/5 chance of
+    # starting the game alive.
+    var pool = @[true, false, false, false, false]
+    for x in 0..univ.width - 1:
+        for y in 0..univ.height - 1:
+            univ.setCellAt(x, y, newCell(pool.randomChoice()))
+
+proc resize(univ: var Universe, width, height: int) =
+    # TODO: would be nice if we could "import" the old universe somehow...
+    # TODO: this makes things *really* slow...
+    univ = newUniverse(width, height)
+    univ.init()
 
 proc render(univ: Universe, renderer: RendererPtr) =
-    # TODO: implement!
-    return
+    for x in 0..univ.width - 1:
+        for y in 0..univ.height - 1:
+            var cell = univ.cellAt(x, y)
+            if cell.alive:
+                var cellRect = (cint(x * kPixelSize), cint(y * kPixelSize),
+                                cint(kPixelSize), cint(kPixelSize))
+                # TODO: make colors fade based on cell age
+                renderer.setDrawColor(r = 0, g = 0, b = 255, a = 255)
+                renderer.fillRect(cellRect)
 
 proc main*() =
     discard sdl2.init(INIT_EVERYTHING)
 
     var
-        univ = newUniverse(640, 480)
+        univ = newUniverse(128, 96)
         window = createWindow("Game of Life",
                               x = 100, y = 100,
-                              w = int32(univ.width), h = int32(univ.height),
+                              w = cint(univ.width * kPixelSize),
+                              h = cint(univ.height * kPixelSize),
                               flags = SDL_WINDOW_SHOWN)
         renderer = createRenderer(window, -1,
                                 Renderer_Accelerated or
@@ -26,6 +50,7 @@ proc main*() =
         done = false
         fpsMan: FpsManager
 
+    univ.init()
     fpsMan.init()
 
     while not done:
@@ -44,6 +69,7 @@ proc main*() =
         renderer.clear()
 
         univ.render(renderer)
+        univ.evolve()
 
         renderer.present()
         fpsMan.delay()
