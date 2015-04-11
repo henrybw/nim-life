@@ -38,7 +38,7 @@ proc main*() =
     var
         univ = newUniverse(128, 96)
         window = createWindow("Game of Life",
-                              x = 100, y = 100,
+                              x = 15, y = 15,
                               w = cint(univ.width * kPixelSize),
                               h = cint(univ.height * kPixelSize),
                               flags = SDL_WINDOW_SHOWN)
@@ -55,15 +55,18 @@ proc main*() =
 
     while not done:
         while pollEvent(evt):
-            if evt.kind == QuitEvent:
-                done = true
-                break
-            if evt.kind == WindowEvent:
+            case evt.kind
+            of WindowEvent:
                 var windowEvent = cast[WindowEventPtr](addr(evt))
                 if windowEvent.event == WindowEvent_Resized:
                     let newWidth = windowEvent.data1
                     let newHeight = windowEvent.data2
                     univ.resize(newWidth, newHeight)
+            of QuitEvent:
+                done = true
+                break
+            else:
+                discard
 
         renderer.setDrawColor(0, 0, 0, 255)
         renderer.clear()
