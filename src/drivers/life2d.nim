@@ -62,6 +62,13 @@ proc main*() =
                     let newWidth = windowEvent.data1
                     let newHeight = windowEvent.data2
                     univ.resize(newWidth, newHeight)
+            of KeyDown:
+                var keyEvent = cast[KeyboardEventPtr](addr(evt))
+
+                # We cast here because modifier keys are outside the range of a
+                # character.
+                if cast[char](keyEvent.keysym.sym) == 'q':
+                    done = true
             of QuitEvent:
                 done = true
                 break
