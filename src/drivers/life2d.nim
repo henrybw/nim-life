@@ -156,7 +156,7 @@ proc main*() =
         renderer.clear()
 
         univ.render(renderer, style)
-        univ.evolve()
+        univ.evolve()  # TODO: this is *really* slow and inefficient
 
         renderer.present()
         fpsMan.delay()
