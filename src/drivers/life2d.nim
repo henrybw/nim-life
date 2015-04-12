@@ -55,7 +55,9 @@ proc render(univ: Universe, renderer: RendererPtr, style: UniverseStyle) =
 
 proc usage() =
     echo "Usage:"
-    echo "life [--fg-color=HEXCOLOR] [--bg-color=HEXCOLOR] [--pixel-size=N]"
+    echo "life [--width=N] [--height=N] [--pixel-size=N]"
+    echo "     [--fg-color=HEXCOLOR] [--bg-color=HEXCOLOR]"
+    echo "     [--gradient=N] [--min-alpha=0-255]"
 
 proc main*() =
     discard sdl2.init(INIT_EVERYTHING)
