@@ -109,7 +109,7 @@ proc main*() =
 
     var
         univ = newUniverse(style.width, style.height)
-        window = createWindow("Game of Life",
+        window = createWindow("Game of Life (press 'q' to quit)",
                               x = 15, y = 15,
                               w = cint(univ.width * style.pixelSize),
                               h = cint(univ.height * style.pixelSize),
