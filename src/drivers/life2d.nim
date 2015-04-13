@@ -59,10 +59,8 @@ proc usage() =
     echo "     [--fg-color=HEXCOLOR] [--bg-color=HEXCOLOR]"
     echo "     [--gradient=N] [--min-alpha=0-255]"
 
-proc main*() =
-    discard sdl2.init(INIT_EVERYTHING)
+proc configureStyle(): UniverseStyle =
     var style = defaultUniverseStyle()
-
     for kind, key, val in getopt():
         case kind
         of cmdLongOption:
@@ -107,7 +105,13 @@ proc main*() =
             usage()
             quit(1)
 
+    return style
+
+proc main*() =
+    discard sdl2.init(INIT_EVERYTHING)
+
     var
+        style = configureStyle()
         univ = newUniverse(style.width, style.height)
         window = createWindow("Game of Life (press 'q' to quit)",
                               x = 15, y = 15,
