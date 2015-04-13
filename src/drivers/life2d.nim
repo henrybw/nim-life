@@ -46,7 +46,8 @@ proc render(univ: Universe, renderer: RendererPtr, style: UniverseStyle) =
                                 cint(style.pixelSize),
                                 cint(style.pixelSize))
                 var step = max(style.cellGradient - cell.age + 1, 1)
-                var alpha = max((255 * step) /% style.cellGradient, style.cellMinAlpha)
+                var alpha = max((255 * step) /% style.cellGradient,
+                                style.cellMinAlpha)
                 renderer.setDrawColor(r = style.fgColor.r,
                                       g = style.fgColor.g,
                                       b = style.fgColor.b,
