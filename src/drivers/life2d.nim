@@ -35,23 +35,26 @@ proc resize(univ: var Universe, width, height: int) =
     # TODO: dynamically resize the universe
     discard
 
-proc render(univ: Universe, renderer: RendererPtr, style: UniverseStyle) =
+proc renderCellAt(renderer: RendererPtr, cell: Cell, x, y: int, style: UniverseStyle) =
+    var cellRect = (cint(x * style.pixelSize),
+                    cint(y * style.pixelSize),
+                    cint(style.pixelSize),
+                    cint(style.pixelSize))
+    var step = max(style.cellGradient - cell.age + 1, 1)
+    var alpha = max((255 * step) /% style.cellGradient,
+                    style.cellMinAlpha)
+    renderer.setDrawColor(r = style.fgColor.r,
+                          g = style.fgColor.g,
+                          b = style.fgColor.b,
+                          a = uint8(alpha))
+    renderer.fillRect(cellRect)
+
+proc renderUniverse(renderer: RendererPtr, univ: Universe, style: UniverseStyle) =
     for x in 0..univ.width - 1:
         for y in 0..univ.height - 1:
             var cell = univ.cellAt(x, y)
             if cell.alive:
-                var cellRect = (cint(x * style.pixelSize),
-                                cint(y * style.pixelSize),
-                                cint(style.pixelSize),
-                                cint(style.pixelSize))
-                var step = max(style.cellGradient - cell.age + 1, 1)
-                var alpha = max((255 * step) /% style.cellGradient,
-                                style.cellMinAlpha)
-                renderer.setDrawColor(r = style.fgColor.r,
-                                      g = style.fgColor.g,
-                                      b = style.fgColor.b,
-                                      a = uint8(alpha))
-                renderer.fillRect(cellRect)
+                renderer.renderCellAt(cell, x, y, style)
 
 proc usage() =
     echo "Usage:"
@@ -131,22 +134,34 @@ proc main*() =
     renderer.setDrawBlendMode(BlendMode_Blend)
 
     while not done:
+        var mouseDown = false
         while pollEvent(evt):
             case evt.kind
             of WindowEvent:
-                var windowEvent = cast[WindowEventPtr](addr(evt))
+                let windowEvent = cast[WindowEventPtr](addr(evt))
                 if windowEvent.event == WindowEvent_Resized:
                     let newWidth = windowEvent.data1
                     let newHeight = windowEvent.data2
                     univ.resize(newWidth, newHeight)
 
             of KeyDown:
-                var keyEvent = cast[KeyboardEventPtr](addr(evt))
+                let keyEvent = cast[KeyboardEventPtr](addr(evt))
 
                 # We cast here because modifier keys are outside the range of a
                 # character.
                 if cast[char](keyEvent.keysym.sym) == 'q':
                     done = true
+
+            of MouseMotion:
+                if (getMouseState(nil, nil) and SDL_BUTTON(BUTTON_LEFT)) != 0:
+                    let mouseEvent = cast[MouseMotionEventPtr](addr(evt))
+                    let cellX = int(mouseEvent.x /% style.pixelSize)
+                    let cellY = int(mouseEvent.y /% style.pixelSize)
+                    let createdCell = newCell(true)
+
+                    univ.setCellAt(cellX, cellY, createdCell)
+                    renderer.renderCellAt(createdCell, cellX, cellY, style)
+                    renderer.present()
 
             of QuitEvent:
                 done = true
@@ -159,7 +174,7 @@ proc main*() =
                               style.bgColor.a)
         renderer.clear()
 
-        univ.render(renderer, style)
+        renderer.renderUniverse(univ, style)
         univ.evolve()
 
         renderer.present()
