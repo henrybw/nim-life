@@ -22,6 +22,8 @@ type
         height: int
         age: int
 
+let kDeadCell = Cell(alive: false, age: 0, liveNeighbors: 0)
+
 ## Constructs a new cell.
 proc newCell*(alive: bool): Cell =
     Cell(alive: alive, age: 0, liveNeighbors: 0)
@@ -56,7 +58,7 @@ proc countAlive*(cells: seq[Cell]): int =
     cells.filter(proc (c: Cell): bool = c.alive).len
 
 ## Determines which physical slot in the universe this cell should be in.
-proc cellSlot(univ: Universe, x, y: int): int =
+proc cellSlot(univ: Universe, x, y: int): int {.inline.} =
     y * univ.width + x
 
 ## Creates an empty universe of the given dimensions. Each cell starts off dead.
@@ -85,7 +87,7 @@ proc cellAt*(univ: Universe, x, y: int): Cell {.inline.} =
     if x >= 0 and x < univ.width and y >= 0 and y < univ.height:
         return univ.cells[univ.cellSlot(x, y)]
     else:
-        return newCell()
+        return kDeadCell
 
 ## Assign the cell at (x,y) in the given universe to the given cell value.
 proc setCellAt*(univ: var Universe, x, y: int, cell: Cell) =
