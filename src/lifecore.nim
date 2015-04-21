@@ -96,18 +96,20 @@ proc setCellAt*(univ: var Universe, x, y: int, cell: Cell) =
 
 ## Returns a sequence of cells representing the neighbors of the cell at (x,y)
 ## in the given universe.
-proc neighborsAt*(univ: Universe, x, y: int): seq[Cell] =
-    @[univ.cellAt(x - 1, y - 1),
-      univ.cellAt(  x  , y - 1),
-      univ.cellAt(x + 1, y - 1),
+proc getNeighborsAt*(univ: Universe, x, y: int,
+                     neighbors: var seq[Cell]) =
+    assert neighbors.len == 8
+    neighbors[0] = univ.cellAt(x - 1, y - 1)
+    neighbors[1] = univ.cellAt(  x  , y - 1)
+    neighbors[2] = univ.cellAt(x + 1, y - 1)
 
-      univ.cellAt(x - 1,   y  ),
-      # This space intentionally left blank
-      univ.cellAt(x + 1,   y  ),
+    neighbors[3] = univ.cellAt(x - 1,   y  )
+    # This space intentionally left blank
+    neighbors[4] = univ.cellAt(x + 1,   y  )
 
-      univ.cellAt(x - 1, y + 1),
-      univ.cellAt(  x  , y + 1),
-      univ.cellAt(x + 1, y + 1)]
+    neighbors[5] = univ.cellAt(x - 1, y + 1)
+    neighbors[6] = univ.cellAt(  x  , y + 1)
+    neighbors[7] = univ.cellAt(x + 1, y + 1)
 
 ## Decides if the given cell, in the context of the universe it is in, should
 ## live, according to the following rules:
@@ -140,9 +142,11 @@ proc evolve*(univ: var Universe) =
     # don't do this, we'll end up mutating the neighbors as we are evolving
     # each cell, which will affect life or death decisions and lead to
     # incorrect evolution.
+    var neighbors = newSeq[Cell](8)
     for x in 0..univ.width - 1:
         for y in 0..univ.height - 1:
-            univ.cellAt(x, y).liveNeighbors = univ.neighborsAt(x, y).countAlive()
+            univ.getNeighborsAt(x, y, neighbors)
+            univ.cellAt(x, y).liveNeighbors = neighbors.countAlive()
 
     for x in 0..univ.width - 1:
         for y in 0..univ.height - 1:

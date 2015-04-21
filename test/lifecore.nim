@@ -95,16 +95,23 @@ suite "core life tests":
         check(revivingNeighbors.toCellSeq().countAlive() == 3)
         check(passiveNeighbors.toCellSeq().countAlive() == 2)
 
-    test "neighborsAt":
+    test "getNeighborsAt":
+        var neighbors = newSeq[Cell](8)
         let killing = universeWithNeighborsAt(true, 1, 1, killingNeighbors)
         let reviving = universeWithNeighborsAt(true, 1, 1, revivingNeighbors)
         let passive = universeWithNeighborsAt(true, 1, 1, passiveNeighbors)
 
-        check(len(killing.neighborsAt(1, 1)) == len(killingNeighbors.toCellSeq()))
-        check(len(reviving.neighborsAt(1, 1)) == len(revivingNeighbors.toCellSeq()))
-        check(len(passive.neighborsAt(1, 1)) == len(passiveNeighbors.toCellSeq()))
+        killing.getNeighborsAt(1, 1, neighbors)
+        check(neighbors.countAlive() == killingNeighbors.toCellSeq().countAlive())
 
-        check(killing.neighborsAt(0, 0).countAlive() == 2, "out-of-bounds neighbors check")
+        reviving.getNeighborsAt(1, 1, neighbors)
+        check(neighbors.countAlive() == revivingNeighbors.toCellSeq().countAlive())
+
+        passive.getNeighborsAt(1, 1, neighbors)
+        check(neighbors.countAlive() == passiveNeighbors.toCellSeq().countAlive())
+
+        killing.getNeighborsAt(0, 0, neighbors)
+        check(neighbors.countAlive() == 2, "out-of-bounds neighbors check")
 
     test "evolveCellAt":
         var univ: Universe
