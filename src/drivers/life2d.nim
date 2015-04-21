@@ -1,3 +1,4 @@
+import nimprof
 import os
 import parseopt2
 import parseutils
@@ -31,10 +32,8 @@ proc init(univ: var Universe) =
             univ.setCellAt(x, y, newCell(pool.randomChoice()))
 
 proc resize(univ: var Universe, width, height: int) =
-    # TODO: would be nice if we could "import" the old universe somehow...
-    # TODO: this makes things *really* slow...
-    univ = newUniverse(width, height)
-    univ.init()
+    # TODO: dynamically resize the universe
+    discard
 
 proc render(univ: Universe, renderer: RendererPtr, style: UniverseStyle) =
     for x in 0..univ.width - 1:
