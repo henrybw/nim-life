@@ -161,7 +161,6 @@ proc main*() =
 
                     univ.setCellAt(cellX, cellY, createdCell)
                     renderer.renderCellAt(createdCell, cellX, cellY, style)
-                    renderer.present()
 
             of QuitEvent:
                 done = true
