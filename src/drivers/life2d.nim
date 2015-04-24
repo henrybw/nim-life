@@ -18,8 +18,8 @@ proc defaultUniverseStyle() : UniverseStyle =
     UniverseStyle(width: 128,
                   height: 98,
                   pixelSize: 8,
-                  fgColor: (r: 0u8, g: 0u8, b: 255u8, a: 255u8),  # Pure blue
-                  bgColor: (r: 0u8, g: 0u8, b: 0u8, a: 255u8),  # Pure black
+                  fgColor: (r: 85u8, g: 255u8, b: 255u8, a: 255u8),  # Cyan
+                  bgColor: (r: 4u8, g: 45u8, b: 55u8, a: 255u8),  # Dark green
                   cellMinAlpha: 50,
                   cellGradient: 10)
 
